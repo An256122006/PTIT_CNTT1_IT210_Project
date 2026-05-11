@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý thuốc - Quản trị viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav-link {
+            color: white !important;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        .nav-link.active {
+            background-color: rgba(255,255,255,0.3);
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(111, 66, 193, 0.4);
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #6f42c1;
+            box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
+        }
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table thead {
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+            color: white;
+        }
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .admin-info {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .admin-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 30px;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/hospital/admin">
+                <i class="fas fa-shield-alt"></i> Hệ thống Bệnh viện - Quản trị viên
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/hospital/admin/dashboard">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/hospital/admin/prescriptions">
+                            <i class="fas fa-prescription"></i> Duyệt đơn thuốc
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/hospital/admin/medicines">
+                            <i class="fas fa-pills"></i> Quản lý thuốc
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <div class="admin-info">
+                        <div class="admin-avatar">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h6 class="mb-1"><!-- Tên admin sẽ được load từ DB --></h6>
+                        <small class="text-muted"><!-- Mã admin sẽ được load từ DB --></small>
+                    </div>
+                    <div class="quick-info">
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Vai trò</small>
+                            <strong>Quản trị viên</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-pills"></i> Quản lý danh mục thuốc
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Tìm kiếm thuốc..." onchange="searchMedicine(this.value)">
+                                </div>
+                                <div class="col-md-3">
+                                    <a href="/hospital/admin/medicines/add" class="btn btn-primary w-100">
+                                        <i class="fas fa-plus"></i> Thêm thuốc
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Mã thuốc</th>
+                                        <th>Tên thuốc</th>
+                                        <th>Mô tả</th>
+                                        <th>Giá (VNĐ)</th>
+                                        <th>Tồn kho</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="medicine : ${medicines}">
+                                        <td th:text="${medicine.id}"></td>
+                                        <td th:text="${medicine.name}"></td>
+                                        <td th:text="${medicine.description}"></td>
+                                        <td th:text="${#numbers.formatDecimal(medicine.price, 1, 0, 'COMMA')} + ' đ'"></td>
+                                        <td th:text="${medicine.quantity}"></td>
+                                        <td>
+                                            <span th:if="${medicine.status == 'ACTIVE'}" class="status-badge status-active">
+                                                <i class="fas fa-check-circle"></i> Hoạt động
+                                            </span>
+                                            <span th:if="${medicine.status == 'INACTIVE'}" class="status-badge status-inactive">
+                                                <i class="fas fa-ban"></i> Không hoạt động
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <a th:href="@{/hospital/admin/medicines/edit/{id}(id=${medicine.id})}" class="btn btn-sm btn-warning">
+                                                    <i class="fas fa-edit"></i> Sửa
+                                                </a>
+                                                <button class="btn btn-sm btn-danger" onclick="deleteMedicine(this)" th:data-id="${medicine.id}">
+                                                    <i class="fas fa-trash"></i> Xóa
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(medicines)}">
+                                        <td colspan="7" class="text-center text-muted py-4">
+                                            <i class="fas fa-inbox"></i> Không có thuốc nào
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const searchMedicine = (search) => {
+            window.location.href = '/hospital/admin/medicines?search=' + search;
+        }
+        const deleteMedicine = (button) => {
+            const medicineId = button.getAttribute('data-id');
+            if (confirm('Bạn có chắc chắn muốn xóa thuốc này?')) {
+                window.location.href = '/hospital/admin/medicines/delete/' + medicineId;
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao diện Bác sĩ</title>
+    <meta http-equiv="refresh" content="0; url=/hospital/doctor">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-user-md"></i> Hệ thống Bệnh viện - Bác sĩ
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showSection('waiting')">
+                            <i class="fas fa-users"></i> Bệnh nhân chờ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('profiles')">
+                            <i class="fas fa-folder-open"></i> Hồ sơ bệnh nhân
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('prescription')">
+                            <i class="fas fa-prescription"></i> Kê đơn thuốc
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('approve')">
+                            <i class="fas fa-check-circle"></i> Duyệt đơn thuốc
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('diagnosis')">
+                            <i class="fas fa-stethoscope"></i> Nhập kết quả chẩn đoán
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/hospital/doctor/logout">
+                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <div class="doctor-info">
+                        <div class="doctor-avatar">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h6 class="mb-1"><!-- Tên bác sĩ sẽ được load từ DB --></h6>
+                        <small class="text-muted"><!-- Mã bác sĩ sẽ được load từ DB --></small>
+                    </div>
+                    <div class="quick-info">
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Chuyên khoa</small>
+                            <strong><!-- Chuyên khoa sẽ được load từ DB --></strong>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Số điện thoại</small>
+                            <strong><!-- Số điện thoại sẽ được load từ DB --></strong>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Email</small>
+                            <strong><!-- Email sẽ được load từ DB --></strong>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Bệnh nhân chờ</small>
+                            <strong><span class="badge bg-warning">5</span></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <!-- Bệnh nhân chờ Section -->
+                <div id="waiting" class="content-section active">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-users"></i> Danh sách bệnh nhân chờ khám
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Mã BN</th>
+                                            <th>Họ tên</th>
+                                            <th>Ngày sinh</th>
+                                            <th>Lý do khám</th>
+                                            <th>Thời gian đến</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- <tr class="urgent">
+                                            <td>1</td>
+                                            <td>BN001234</td>
+                                            <td>Nguyễn Văn A</td>
+                                            <td>15/03/1985</td>
+                                            <td>Sốt cao, đau đầu</td>
+                                            <td>08:30</td>
+                                            <td><span class="status-badge status-waiting">Chờ khám</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-success">
+                                                    <i class="fas fa-user-check"></i> Tiếp nhận
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>BN001235</td>
+                                            <td>Trần Thị B</td>
+                                            <td>20/05/1990</td>
+                                            <td>Tái khám tiểu đường</td>
+                                            <td>09:15</td>
+                                            <td><span class="status-badge status-waiting">Chờ khám</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-success">
+                                                    <i class="fas fa-user-check"></i> Tiếp nhận
+                                                </button>
+                                            </td>
+                                        </tr> -->
+                                        <tr>
+                                            <td colspan="8" class="text-center">Dữ liệu bệnh nhân chờ sẽ được load từ DB</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hồ sơ bệnh nhân Section -->
+                <div id="profiles" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-folder-open"></i> Quản lý hồ sơ bệnh nhân
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" placeholder="Tìm kiếm theo tên, mã bệnh nhân...">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-select">
+                                            <option selected>-- Tất cả chuyên khoa --</option>
+                                            <!-- <option>Nội tổng hợp</option>
+                                            <option>Ngoại tổng hợp</option>
+                                            <option>Sản phụ khoa</option> -->
+                                            <option>Dữ liệu chuyên khoa sẽ được load từ DB</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-primary w-100">
+                                            <i class="fas fa-search"></i> Tìm kiếm
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã BN</th>
+                                            <th>Họ tên</th>
+                                            <th>Ngày sinh</th>
+                                            <th>Giới tính</th>
+                                            <th>Số điện thoại</th>
+                                            <th>Địa chỉ</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- <tr>
+                                            <td>BN001234</td>
+                                            <td>Nguyễn Văn A</td>
+                                            <td>15/03/1985</td>
+                                            <td>Nam</td>
+                                            <td>0912345678</td>
+                                            <td>123 Đường ABC, Quận 1, TP.HCM</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i> Chi tiết
+                                                </button>
+                                                <button class="btn btn-sm btn-warning">
+                                                    <i class="fas fa-edit"></i> Sửa
+                                                </button>
+                                            </td>
+                                        </tr> -->
+                                        <tr>
+                                            <td colspan="7" class="text-center">Dữ liệu hồ sơ bệnh nhân sẽ được load từ DB</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kê đơn thuốc Section -->
+                <div id="prescription" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-prescription"></i> Kê đơn thuốc
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Mã bệnh nhân</label>
+                                        <input type="text" class="form-control" placeholder="Nhập mã bệnh nhân">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Tên bệnh nhân</label>
+                                        <input type="text" class="form-control" placeholder="Tên sẽ tự động điền">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Chẩn đoán</label>
+                                    <textarea class="form-control" rows="3" placeholder="Nhập chẩn đoán của bác sĩ..."></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Ghi chú</label>
+                                    <textarea class="form-control" rows="2" placeholder="Ghi chú thêm cho bệnh nhân..."></textarea>
+                                </div>
+                                
+                                <h5 class="mt-4 mb-3">Danh sách thuốc</h5>
+                                <div id="prescriptionItems">
+                                    <div class="prescription-item">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-2">
+                                                <input type="text" class="form-control" placeholder="Tên thuốc">
+                                            </div>
+                                            <div class="col-md-2 mb-2">
+                                                <input type="text" class="form-control" placeholder="Số lượng">
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <input type="text" class="form-control" placeholder="Liều dùng">
+                                            </div>
+                                            <div class="col-md-2 mb-2">
+                                                <input type="text" class="form-control" placeholder="Số ngày">
+                                            </div>
+                                            <div class="col-md-1 mb-2">
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="removePrescriptionItem(this)">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" class="btn btn-secondary mb-3" onclick="addPrescriptionItem()">
+                                    <i class="fas fa-plus"></i> Thêm thuốc
+                                </button>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> Lưu đơn thuốc
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6 text-end">
+                                        <button type="button" class="btn btn-info">
+                                            <i class="fas fa-print"></i> In đơn thuốc
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Duyệt đơn thuốc Section -->
+                <div id="approve" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-check-circle"></i> Duyệt đơn thuốc chờ
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã đơn</th>
+                                            <th>Mã BN</th>
+                                            <th>Tên bệnh nhân</th>
+                                            <th>Bác sĩ kê đơn</th>
+                                            <th>Ngày kê</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- <tr>
+                                            <td>DT001234</td>
+                                            <td>BN001234</td>
+                                            <td>Nguyễn Văn A</td>
+                                            <td>BS. Trần Văn B</td>
+                                            <td>15/11/2024</td>
+                                            <td><span class="status-badge status-pending">Chờ duyệt</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-success">
+                                                    <i class="fas fa-check"></i> Duyệt
+                                                </button>
+                                                <button class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i> Chi tiết
+                                                </button>
+                                                <button class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-times"></i> Từ chối
+                                                </button>
+                                            </td>
+                                        </tr> -->
+                                        <tr>
+                                            <td colspan="7" class="text-center">Dữ liệu đơn thuốc chờ duyệt sẽ được load từ DB</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nhập kết quả chẩn đoán Section -->
+                <div id="diagnosis" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-stethoscope"></i> Nhập kết quả chẩn đoán
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Mã bệnh nhân</label>
+                                        <input type="text" class="form-control" placeholder="Nhập mã bệnh nhân">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Tên bệnh nhân</label>
+                                        <input type="text" class="form-control" placeholder="Tên sẽ tự động điền">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Ngày khám</label>
+                                        <input type="date" class="form-control">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Loại khám</label>
+                                        <select class="form-select">
+                                            <option selected>-- Chọn loại khám --</option>
+                                            <!-- <option>Khám bệnh lần đầu</option>
+                                            <option>Tái khám</option>
+                                            <option>Khám chuyên khoa</option> -->
+                                            <option>Dữ liệu loại khám sẽ được load từ DB</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Triệu chứng lâm sàng</label>
+                                    <textarea class="form-control" rows="3" placeholder="Mô tả triệu chứng lâm sàng..."></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Kết quả xét nghiệm</label>
+                                    <textarea class="form-control" rows="3" placeholder="Nhập kết quả xét nghiệm (nếu có)..."></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Chẩn đoán sơ bộ</label>
+                                    <textarea class="form-control" rows="2" placeholder="Chẩn đoán sơ bộ..."></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Chẩn đoán xác định</label>
+                                    <textarea class="form-control" rows="2" placeholder="Chẩn đoán xác định..."></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Hướng điều trị</label>
+                                    <textarea class="form-control" rows="3" placeholder="Hướng điều trị..."></textarea>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Tái khám sau</label>
+                                        <input type="number" class="form-control" placeholder="Số ngày">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Mức độ</label>
+                                        <select class="form-select">
+                                            <option selected>-- Chọn mức độ --</option>
+                                            <!-- <option>Nhẹ</option>
+                                            <option>Trung bình</option>
+                                            <option>Nặng</option>
+                                            <option>Cấp cứu</option> -->
+                                            <option>Dữ liệu mức độ sẽ được load từ DB</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> Lưu kết quả
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="button" class="btn btn-info">
+                                            <i class="fas fa-file-medical"></i> Tạo hồ sơ
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="button" class="btn btn-secondary">
+                                            <i class="fas fa-print"></i> In kết quả
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prescription Detail Modal -->
+    <div class="modal fade" id="prescriptionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết đơn thuốc</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="prescriptionDetail">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-success">Duyệt</button>
+                    <button type="button" class="btn btn-danger">Từ chối</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        function addPrescriptionItem() {
+            const container = document.getElementById('prescriptionItems');
+            const newItem = document.createElement('div');
+            newItem.className = 'prescription-item';
+            newItem.innerHTML = `
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <input type="text" class="form-control" placeholder="Tên thuốc">
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <input type="text" class="form-control" placeholder="Số lượng">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <input type="text" class="form-control" placeholder="Liều dùng">
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <input type="text" class="form-control" placeholder="Số ngày">
+                    </div>
+                    <div class="col-md-1 mb-2">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removePrescriptionItem(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(newItem);
+        }
+        
+        function removePrescriptionItem(button) {
+            button.closest('.prescription-item').remove();
+        }
+        
+        function showPrescriptionDetail(prescriptionId) {
+
+            document.getElementById('prescriptionDetail').innerHTML = `
+                <p><strong>Mã đơn:</strong> ${prescriptionId}</p>
+                <p><strong>Nội dung đơn thuốc sẽ được load từ DB</strong></p>
+            `;
+            new bootstrap.Modal(document.getElementById('prescriptionModal')).show();
+        }
+    </script>
+</body>
+</html>

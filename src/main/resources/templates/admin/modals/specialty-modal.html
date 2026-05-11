@@ -1,0 +1,161 @@
+<div th:fragment="specialty-modals" xmlns:th="http://www.thymeleaf.org">
+<div class="modal fade" id="specialtyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="specialtyModalTitle">Thêm chuyên khoa mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/hospital/admin/specialties}" th:object="${specialty}" method="post" id="specialtyForm">
+                    <input type="hidden" id="specialtyId" th:field="*{id}">
+                    <div class="mb-3">
+                        <label class="form-label">Tên chuyên khoa</label>
+                        <input type="text" class="form-control" th:field="*{name}" placeholder="Nhập tên chuyên khoa" required>
+                        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" th:field="*{description}" rows="3" placeholder="Mô tả chuyên khoa"></textarea>
+                        <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-select" id="specialtyStatus">
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Không hoạt động</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveSpecialty()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Specialty Detail Modal -->
+<div class="modal fade" id="specialtyDetailModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết chuyên khoa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Mã chuyên khoa:</strong>
+                        <p id="detailSpecialtyCode"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Tên chuyên khoa:</strong>
+                        <p id="detailSpecialtyName"></p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Số bác sĩ:</strong>
+                        <p id="detailSpecialtyDoctorCount"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Trạng thái:</strong>
+                        <p id="detailSpecialtyStatus"></p>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <strong>Mô tả:</strong>
+                    <p id="detailSpecialtyDescription"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-warning" onclick="editSpecialtyFromDetail()">Sửa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addSpecialty() {
+    document.getElementById('specialtyModalTitle').textContent = 'Thêm chuyên khoa mới';
+    document.getElementById('specialtyForm').reset();
+    document.getElementById('specialtyId').value = '';
+    new bootstrap.Modal(document.getElementById('specialtyModal')).show();
+}
+
+function editSpecialty(id) {
+    fetch(`/hospital/admin/specialties/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('specialtyModalTitle').textContent = 'Sửa chuyên khoa';
+            document.getElementById('specialtyId').value = data.id;
+            document.getElementById('name').value = data.name;
+            document.getElementById('description').value = data.description || '';
+            new bootstrap.Modal(document.getElementById('specialtyModal')).show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Lỗi!', 'Không thể tải dữ liệu chuyên khoa.', 'error');
+        });
+}
+
+function deleteSpecialty(button) {
+    const id = button.getAttribute('data-id');
+    const name = button.getAttribute('data-name');
+    Swal.fire({
+        title: 'Xác nhận xóa chuyên khoa',
+        text: `Bạn có chắc chắn muốn xóa chuyên khoa "${name}"? Hành động này không thể hoàn tác!`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/hospital/admin/specialties/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    Swal.fire(
+                        'Đã xóa!',
+                        'Chuyên khoa đã được xóa thành công.',
+                        'success'
+                    ).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Có lỗi xảy ra khi xóa chuyên khoa.');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire(
+                    'Lỗi!',
+                    'Có lỗi xảy ra khi xóa chuyên khoa.',
+                    'error'
+                );
+            });
+        }
+    });
+}
+
+function saveSpecialty() {
+    document.getElementById('specialtyForm').submit();
+}
+
+function editSpecialtyFromDetail() {
+    bootstrap.Modal.getInstance(document.getElementById('specialtyDetailModal')).hide();
+    editSpecialty(document.getElementById('specialtyId').value);
+}
+</script>
+</div>

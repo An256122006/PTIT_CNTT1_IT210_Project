@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Đăng nhập</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+        }
+
+        .login-card {
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            padding: 30px;
+            background: white;
+        }
+
+        .title {
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            border-radius: 8px;
+        }
+
+        .extra {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .extra a {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="d-flex justify-content-center align-items-center" style="height:100vh;">
+    <div class="col-md-4">
+        <div class="login-card">
+
+            <h4 class="title">Đăng nhập</h4>
+
+            <form th:action="@{/hospital/login}" method="post">
+                <div class="form-group">
+                    <label>Tên đăng nhập</label>
+                    <input type="text" name="username" class="form-control" placeholder="Nhập username" >
+                </div>
+
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" >
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    Đăng nhập
+                </button>
+                <small th:if="${error}" class="text-danger">Tên đăng nhập hoặc mật khẩu không chính xác</small>
+                <div class="extra">
+                    <a th:href="@{/hospital/register}">Chưa có tài khoản? Đăng ký</a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

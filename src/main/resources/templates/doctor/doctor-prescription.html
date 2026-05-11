@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kê đơn thuốc - Bệnh viện</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link {
+            color: white !important;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .doctor-info {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .doctor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 30px;
+        }
+
+        .prescription-item {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/hospital/doctor">
+            <i class="fas fa-user-md"></i> Hệ thống Bệnh viện - Bác sĩ
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/hospital/doctor">
+                        <i class="fas fa-home"></i> Trang chủ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hospital/doctor/waiting">
+                        <i class="fas fa-users"></i> Bệnh nhân chờ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hospital/doctor/profiles">
+                        <i class="fas fa-folder-open"></i> Hồ sơ bệnh nhân
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/hospital/doctor/prescription">
+                        <i class="fas fa-prescription"></i> Kê đơn thuốc
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hospital/doctor/diagnosis">
+                        <i class="fas fa-stethoscope"></i> Nhập kết quả chẩn đoán
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hospital/doctor/logout">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="sidebar">
+                <div class="doctor-info">
+                    <div class="doctor-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h6 class="mb-1" th:text="${user.users.username}"></h6>
+                    <small class="text-muted" th:text="${user.id}"></small>
+                </div>
+                <div class="quick-info">
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Chuyên khoa</small>
+                        <strong th:text="${user.specialties.name}"></strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Số điện thoại</small>
+                        <strong th:text="${user.users.userProfiles.phone}"></strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Email</small>
+                        <strong th:text="${user.users.userProfiles.email}"></strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Bệnh nhân chờ</small>
+                        <strong><span class="badge bg-warning">5</span></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-prescription"></i> Kê đơn thuốc
+                </div>
+                <div class="card-body">
+                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i> <span th:text="${errorMessage}"></span>
+                    </div>
+                    <div th:if="${medical == null or #lists.isEmpty(medical)}" class="alert alert-warning" role="alert">
+                        <i class="fas fa-info-circle"></i> Không có bệnh nhân nào để kê đơn. Vui lòng nhập kết quả chẩn đoán trước.
+                    </div>
+
+                    <form th:object="${prescription}" th:action="@{/hospital/doctor/prescription}" method="post" th:if="${medical != null and !#lists.isEmpty(medical)}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Mã bệnh nhân</label>
+                                <select class="form-control" id="patientSelect" onchange="updatePatientName()"
+                                        th:field="*{medicalRecordId}" required>
+                                    <option value="">Chọn bệnh nhân</option>
+                                    <option th:each="patient : ${medical}" th:value="${patient.id}"
+                                            th:data-description="${patient.description}"
+                                            th:text="${#temporals.format(patient.date, 'dd/MM/yyyy')} + ' - ' + ${patient.appointments.patient.username}"></option>
+                                </select>
+                                <span th:if="${#fields.hasErrors('medicalRecordId')}" class="text-danger"
+                                      th:errors="*{medicalRecordId}"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tên bệnh nhân</label>
+                                <input type="text" class="form-control" id="patientName" readonly
+                                       placeholder="Tên sẽ tự động điền">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Chẩn đoán</label>
+                            <textarea class="form-control" rows="3" readonly
+                                      id="diagnosisText" placeholder="Chẩn đoán sẽ tự động hiển thị khi chọn bệnh nhân..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Ghi chú đơn thuốc</label>
+                            <textarea class="form-control" rows="2" placeholder="Ghi chú thêm cho đơn thuốc..."
+                                      th:field="*{description}"></textarea>
+                            <span th:if="${#fields.hasErrors('description')}" class="text-danger"
+                                  th:errors="*{description}"></span>
+                        </div>
+
+                        <h5 class="mt-4 mb-3">Danh sách thuốc</h5>
+                        <div id="prescriptionItems">
+                        </div>
+                        <select id="medicineTemplate" style="display:none;">
+
+                            <option value="">Chọn thuốc</option>
+
+                            <option
+                                    th:each="medicine : ${medicines}"
+                                    th:value="${medicine.id}"
+                                    th:text="${medicine.name} + ' - ' + ${medicine.price} + ' VNĐ'">
+                            </option>
+
+
+                        </select>
+
+                        <button type="button" class="btn btn-secondary mb-3" onclick="addPrescriptionItem()">
+                            <i class="fas fa-plus"></i> Thêm thuốc
+                        </button>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Lưu đơn thuốc
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function addPrescriptionItem() {
+
+        const container =
+            document.getElementById('prescriptionItems');
+
+        const index =
+            document.querySelectorAll('.prescription-item').length;
+
+        const medicineOptions =
+            document.getElementById('medicineTemplate').innerHTML;
+
+        const newItem =
+            document.createElement('div');
+
+        newItem.className = 'prescription-item';
+
+        newItem.innerHTML = `
+        <div class="row">
+
+            <div class="col-md-6 mb-2">
+
+                <select
+                    class="form-control"
+                    th:field="*{medicines[${index}].medicineId}"
+                    name="medicines[${index}].medicineId" required>
+
+                    ${medicineOptions}
+
+                </select>
+
+            </div>
+
+            <div class="col-md-4 mb-2">
+
+                <input
+                    type="number"
+                    class="form-control"
+                    placeholder="Số lượng"
+                    th:field="*{medicines[${index}].quantity}"
+                    name="medicines[${index}].quantity" min="1" required>
+
+            </div>
+
+            <div class="col-md-2 mb-2">
+
+                <button
+                    type="button"
+                    class="btn btn-danger btn-sm"
+                    onclick="removePrescriptionItem(this)">
+
+                    <i class="fas fa-times"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+        container.appendChild(newItem);
+    }
+
+    function removePrescriptionItem(button) {
+        button.closest('.prescription-item').remove();
+    }
+
+    function updatePatientName() {
+
+        const select =
+            document.getElementById('patientSelect');
+
+        const patientNameInput =
+            document.getElementById('patientName');
+
+        const diagnosisInput =
+            document.getElementById('diagnosisText');
+
+        const selectedOption =
+            select.options[select.selectedIndex];
+
+        if (selectedOption.value) {
+
+            const fullName =
+                selectedOption.text.split(' - ')[1];
+
+            patientNameInput.value = fullName;
+
+            diagnosisInput.value =
+                selectedOption.dataset.description;
+
+        } else {
+
+            patientNameInput.value = '';
+
+            diagnosisInput.value = '';
+        }
+    }
+</script>
+</body>
+</html>

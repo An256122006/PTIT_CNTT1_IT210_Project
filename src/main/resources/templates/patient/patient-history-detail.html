@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết phiếu khám bệnh - Bệnh viện</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav-link {
+            color: white !important;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        .nav-link.active {
+            background-color: rgba(255,255,255,0.3);
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .user-info {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 30px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+            min-width: 120px;
+        }
+        .info-value {
+            color: #212529;
+        }
+        .medicine-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .medicine-name {
+            font-weight: 600;
+            color: #495057;
+            font-size: 16px;
+        }
+        .medicine-description {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .medicine-quantity {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .diagnosis-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #28a745;
+        }
+        .prescription-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #007bff;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .detail-section {
+            margin-top: 20px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/hospital/patient">
+                <i class="fas fa-hospital"></i> Hệ thống Bệnh viện
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/hospital/patient/appointment">
+                            <i class="fas fa-calendar-plus"></i> Đặt lịch khám
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/hospital/patient/profile">
+                            <i class="fas fa-user"></i> Hồ sơ bệnh nhân
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/hospital/patient/history">
+                            <i class="fas fa-history"></i> Lịch sử khám bệnh
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/hospital/patient/logout">
+                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h6 class="mb-1" th:text="${user.username}"></h6>
+                        <small class="text-muted" th:text="${user.id}"></small>
+                    </div>
+                    <div class="quick-info">
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Email</small>
+                            <strong th:text="${user.userProfiles.email}"></strong>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Số điện thoại</small>
+                            <strong th:text="${user.userProfiles.phone}"></strong>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Ngày sinh</small>
+                            <strong th:text="${user.userProfiles.date_of_birth}"></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <!-- Header Actions -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-medical"></i> Chi tiết phiếu khám bệnh
+                    </h4>
+                    <a href="/hospital/patient/history" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+
+                <!-- Medical Record Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-info-circle"></i> Thông tin phiếu khám
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex">
+                                    <span class="info-label">Mã phiếu:</span>
+                                    <span class="info-value ms-2" th:text="${medicalRecord.id}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex">
+                                    <span class="info-label">Ngày khám:</span>
+                                    <span class="info-value ms-2" th:text="${#temporals.format(medicalRecord.date, 'dd/MM/yyyy')}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex">
+                                    <span class="info-label">Bác sĩ:</span>
+                                    <span class="info-value ms-2" th:text="${medicalRecord.appointments.doctor.users.username}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex">
+                                    <span class="info-label">Chuyên khoa:</span>
+                                    <span class="info-value ms-2" th:text="${medicalRecord.appointments.doctor.specialties.name}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnosis Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-stethoscope"></i> Chẩn đoán bệnh
+                    </div>
+                    <div class="card-body">
+                        <div class="diagnosis-box">
+                            <h6 class="mb-3">Mô tả chẩn đoán:</h6>
+                            <p class="mb-0" th:text="${medicalRecord.description}"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prescription Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-prescription"></i> Đơn thuốc
+                    </div>
+                    <div class="card-body">
+                        <div class="prescription-box">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Mã đơn thuốc:</strong> 
+                                    <span th:text="${prescription.id}"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Trạng thái:</strong> 
+                                    <span th:if="${prescription.status == 'ACTIVE'}" class="status-badge status-active">Đang hoạt động</span>
+                                    <span th:if="${prescription.status == 'INACTIVE'}" class="status-badge status-inactive">Không hoạt động</span>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h6 class="section-title">Ghi chú đơn thuốc:</h6>
+                                <p th:text="${prescription.description}" class="mb-3"></p>
+                            </div>
+
+                            <div class="detail-section">
+                                <h6 class="section-title">
+                                    <i class="fas fa-pills"></i> Danh sách thuốc (
+                                    <span th:text="${prescriptionDetails.size()}"></span> loại thuốc)
+                                </h6>
+                                
+                                <div th:if="${prescriptionDetails == null or prescriptionDetails.isEmpty()}" class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> Không có thuốc nào trong đơn này.
+                                </div>
+                                
+                                <div th:each="detail : ${prescriptionDetails}" class="medicine-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <div class="medicine-name" th:text="${detail.medicines.name}"></div>
+                                            <div class="medicine-description" th:text="${detail.medicines.description}"></div>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <span class="medicine-quantity" th:text="'Số lượng: ' + ${detail.quantity}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-tag"></i> Giá: 
+                                            <span th:text="${#numbers.formatDecimal(detail.medicines.price, 0, 0)} + ' VNĐ'"></span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line"></i> Tổng kết
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="section-title">Thông tin điều trị</h6>
+                                <p class="mb-2"><strong>Ngày khám:</strong> <span th:text="${#temporals.format(medicalRecord.date, 'dd/MM/yyyy')}"></span></p>
+                                <p class="mb-2"><strong>Bác sĩ điều trị:</strong> <span th:text="${medicalRecord.appointments.doctor.users.username}"></span></p>
+                                <p class="mb-2"><strong>Chuyên khoa:</strong> <span th:text="${medicalRecord.appointments.doctor.specialties.name}"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="section-title">Thông tin thuốc</h6>
+                                <p class="mb-2"><strong>Tổng số loại thuốc:</strong> <span th:text="${prescriptionDetails.size()}"></span></p>
+                                <p class="mb-2"><strong>Trạng thái đơn thuốc:</strong> 
+                                    <span th:if="${prescription.status == 'APPROVED'}" class="status-badge status-active">Xác Nhận</span>
+                                    <span th:if="${prescription.status == 'REJECTED'}" class="status-badge status-inactive">Từ Chối</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
