@@ -196,7 +196,7 @@ public class DoctorController {
             prescriptionDetail.setQuantity(dt.getQuantity());
             prescriptionDetailService.save(prescriptionDetail);
         }
-        return "redirect:/hospital/doctor/prescription";
+        return "redirect:/hospital/doctor/waiting";
     }
     @GetMapping("/profiles/{id}")
     public String editMedicalRecord(@PathVariable("id") Long id, HttpSession session, Model model) {

@@ -18,6 +18,14 @@ public class SpecicaltiesService implements ISpecialtiesService {
     }
 
     @Override
+    public List<Specialties> findAll(String search) {
+        if (search == null || search.trim().isEmpty()) {
+            return findAll();
+        }
+        return specialtiesRepository.findByNameContainingIgnoreCase(search.trim());
+    }
+
+    @Override
     public Specialties save(Specialties specialties) {
         return specialtiesRepository.save(specialties);
     }

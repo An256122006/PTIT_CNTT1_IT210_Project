@@ -196,15 +196,17 @@
                         </div>
                         <div class="mb-3">
                             <small class="text-muted d-block">Số điện thoại</small>
-                            <strong th:text="${user.users.userProfiles.phone}"></strong>
+                            <strong th:text="${user.users.userProfiles != null ? user.users.userProfiles.phone : 'N/A'}" th:if="${user.users.userProfiles != null}"></strong>
+                            <strong th:if="${user.users.userProfiles == null}">N/A</strong>
                         </div>
                         <div class="mb-3">
                             <small class="text-muted d-block">Email</small>
-                            <strong th:text="${user.users.userProfiles.email}"></strong>
+                            <strong th:text="${user.users.userProfiles != null ? user.users.userProfiles.email : 'N/A'}" th:if="${user.users.userProfiles != null}"></strong>
+                            <strong th:if="${user.users.userProfiles == null}">N/A</strong>
                         </div>
                         <div class="mb-3">
                             <small class="text-muted d-block">Bệnh nhân chờ</small>
-                            <strong><span class="badge bg-warning" th:text="${appointments.size()}"></span></strong>
+                            <strong><span class="badge bg-warning" th:text="${#lists.size(appointments)}"></span></strong>
                         </div>
                     </div>
                 </div>
@@ -275,7 +277,7 @@
                                     <td th:text="${iterStat.count}"></td>
                                     <td th:text="${appointment.patient.id}"></td>
                                     <td th:text="${appointment.patient.username}"></td>
-                                    <td th:text="${#temporals.format(appointment.patient.userProfiles.Date_of_birth, 'dd/MM/yyyy')}"></td>
+                                    <td th:text="${appointment.patient.userProfiles != null ? #temporals.format(appointment.patient.userProfiles.Date_of_birth, 'dd/MM/yyyy') : 'N/A'}"></td>
                                     <td>
                                         <small>Khám lịch hẹn</small>
                                     </td>

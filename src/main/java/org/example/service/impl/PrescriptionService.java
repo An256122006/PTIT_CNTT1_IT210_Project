@@ -1,7 +1,10 @@
 package org.example.service.impl;
 
 import org.example.model.Medicines;
+import org.example.model.Payments;
 import org.example.repository.IMedicinesRepository;
+import org.example.service.IPaymentService;
+import org.example.service.IUserService;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.model.PrescriptionDetail;
@@ -19,6 +22,8 @@ public class PrescriptionService implements IPrensionService {
     private final IPrescriptionsRepository prescriptionsRepository;
     private final IPrescriptionDetailRepository prescriptionDetailRepository;
     private final IMedicinesRepository medicinesRepository;
+    private final IPaymentService paymentService;
+    private final IUserService userService;
 
     @Override
     public Prescriptions save(Prescriptions prescriptions) {
@@ -48,15 +53,24 @@ public class PrescriptionService implements IPrensionService {
             throw new RuntimeException("Đơn thuốc không tồn tại");
         }
         List<PrescriptionDetail> details = prescriptionDetailRepository.findByPrescriptionId(id);
+        double totalAmount = 0;
         for (PrescriptionDetail detail : details) {
             Medicines medicines = medicinesRepository.findById(detail.getMedicines().getId()).orElse(null);
             if (detail.getQuantity() > medicines.getQuantity()) {
                 throw new RuntimeException("Số lượng thuốc không đủ: " + medicines.getName() + 
                     " (Cần: " + detail.getQuantity() + ", Tồn kho: " + medicines.getQuantity() + ")");
             }
+            totalAmount+=detail.getMedicines().getPrice() * detail.getQuantity();
             medicines.setQuantity(medicines.getQuantity() - detail.getQuantity());
             medicinesRepository.save(medicines);
         }
+        Payments payments = new Payments();
+        payments.setAmount( totalAmount);
+        payments.setAdmin(userService.findById(1L));
+        payments.setPrescription(prescriptions);
+        payments.setStatus("PENDING");
+        payments.setPaymentDate(LocalDate.now());
+        paymentService.save(payments);
         prescriptions.setStatus("APPROVED");
         prescriptionsRepository.save(prescriptions);
     }

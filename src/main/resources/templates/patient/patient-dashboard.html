@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -163,6 +163,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/hospital/patient/payment">
+                            <i class="fas fa-credit-card"></i> Lịch sử thanh toán
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/hospital/patient/logout">
                             <i class="fas fa-sign-out-alt"></i> Đăng xuất
                         </a>
@@ -181,21 +186,24 @@
                         <div class="user-avatar">
                             <i class="fas fa-user"></i>
                         </div>
-                        <h6 class="mb-1"><!-- Tên bệnh nhân sẽ được load từ DB --></h6>
-                        <small class="text-muted"><!-- Mã bệnh nhân sẽ được load từ DB --></small>
+                        <h6 class="mb-1" th:text="${user.username}"></h6>
+                        <small class="text-muted" th:text="${'Mã BN: ' + user.id}"></small>
                     </div>
                     <div class="quick-info">
                         <div class="mb-3">
                             <small class="text-muted d-block">Email</small>
-                            <strong><!-- Email sẽ được load từ DB --></strong>
+                            <strong th:text="${user.userProfiles != null ? user.userProfiles.email : 'N/A'}" th:if="${user.userProfiles != null}"></strong>
+                            <strong th:if="${user.userProfiles == null}">N/A</strong>
                         </div>
                         <div class="mb-3">
                             <small class="text-muted d-block">Số điện thoại</small>
-                            <strong><!-- Số điện thoại sẽ được load từ DB --></strong>
+                            <strong th:text="${user.userProfiles != null ? user.userProfiles.phone : 'N/A'}" th:if="${user.userProfiles != null}"></strong>
+                            <strong th:if="${user.userProfiles == null}">N/A</strong>
                         </div>
                         <div class="mb-3">
                             <small class="text-muted d-block">Ngày sinh</small>
-                            <strong><!-- Ngày sinh sẽ được load từ DB --></strong>
+                            <strong th:text="${user.userProfiles != null ? #temporals.format(user.userProfiles.Date_of_birth, 'dd/MM/yyyy') : 'N/A'}" th:if="${user.userProfiles != null}"></strong>
+                            <strong th:if="${user.userProfiles == null}">N/A</strong>
                         </div>
                     </div>
                 </div>
@@ -214,7 +222,7 @@
                 <!-- Quick Actions -->
                 <div class="row mb-4">
                     <div class="col-md-6 mb-3">
-                        <a href="/patient/appointment" class="quick-action-card">
+                        <a href="/hospital/patient/appointment" class="quick-action-card">
                             <div class="quick-action-icon">
                                 <i class="fas fa-calendar-plus"></i>
                             </div>
@@ -223,7 +231,7 @@
                         </a>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <a href="/patient/history" class="quick-action-card">
+                        <a href="/hospital/patient/history" class="quick-action-card">
                             <div class="quick-action-icon">
                                 <i class="fas fa-history"></i>
                             </div>
@@ -232,7 +240,7 @@
                         </a>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <a href="/patient/profile" class="quick-action-card">
+                        <a href="/hospital/patient/profile" class="quick-action-card">
                             <div class="quick-action-icon">
                                 <i class="fas fa-user"></i>
                             </div>
@@ -241,7 +249,7 @@
                         </a>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <a href="/patient/cancel" class="quick-action-card">
+                        <a href="/hospital/patient/history" class="quick-action-card">
                             <div class="quick-action-icon">
                                 <i class="fas fa-times-circle"></i>
                             </div>
@@ -270,8 +278,25 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td colspan="6" class="text-center">Dữ liệu lịch khám sẽ được load từ DB</td>
+                                    <tr th:if="${appointments == null or appointments.isEmpty()}">
+                                        <td colspan="6" class="text-center">Không có lịch khám sắp tới</td>
+                                    </tr>
+                                    <tr th:each="appointment : ${appointments}">
+                                        <td th:text="${#temporals.format(appointment.startDate, 'dd/MM/yyyy')}"></td>
+                                        <td th:text="${#temporals.format(appointment.startDate, 'HH:mm')}"></td>
+                                        <td th:text="${appointment.doctor.specialties.name}"></td>
+                                        <td th:text="${appointment.doctor.users.username}"></td>
+                                        <td>
+                                            <span th:if="${appointment.status == 'PENDING'}" class="status-badge status-pending">Chờ xác nhận</span>
+                                            <span th:if="${appointment.status == 'CONFIRMED'}" class="status-badge status-confirmed">Đã xác nhận</span>
+                                            <span th:if="${appointment.status == 'COMPLETED'}" class="status-badge status-confirmed">Hoàn thành</span>
+                                            <span th:if="${appointment.status == 'CANCELLED'}" class="status-badge status-cancelled">Đã hủy</span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/hospital/patient/history/{id}(id=${appointment.id})}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye"></i> Xem
+                                            </a>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

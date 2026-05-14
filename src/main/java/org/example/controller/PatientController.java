@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.AppointmentsDto;
 import org.example.model.*;
-import org.example.repository.IPrescriptionDetailRepository;
 import org.example.service.IAppointmentService;
 import org.example.service.IDoctorService;
 import org.example.service.ISpecialtiesService;
@@ -13,15 +12,14 @@ import org.example.service.IUserService;
 import org.example.service.impl.MedicalRecordService;
 import org.example.service.impl.PrescriptionDetailService;
 import org.example.service.impl.PrescriptionService;
+import org.example.service.IPaymentService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
 @Controller
 @RequestMapping("/hospital/patient")
 @RequiredArgsConstructor
@@ -33,12 +31,21 @@ public class PatientController {
     private final PrescriptionService prescriptionsService;
     private final MedicalRecordService medicalRecordsService;
     private final PrescriptionDetailService prescriptionDetailService;
+    private final IPaymentService paymentService;
     @GetMapping
-    public String patient(HttpSession session) {
+    public String patient(HttpSession session, Model model) {
         Users users = (Users) session.getAttribute("user");
         if (users == null) {
             return "redirect:/hospital/login";
         }
+        model.addAttribute("user", users);
+        List<Appointments> upcomingAppointments = appointmentService
+                .filterByDate(LocalDateTime.now(), LocalDateTime.now().plusMonths(3))
+                .stream()
+                .filter(a -> a.getPatient().getId().equals(users.getId()) && !a.getStatus().equals("CANCELLED"))
+                .toList();
+        model.addAttribute("appointments", upcomingAppointments);
+
         return "patient/patient-dashboard";
     }
 
@@ -48,10 +55,8 @@ public class PatientController {
         if (users == null) {
             return "redirect:/hospital/login";
         }
-
         AppointmentsDto appointmentDto = new AppointmentsDto();
         appointmentDto.setPatientId(users.getId());
-
         model.addAttribute("specialties", specialtiesService.findAll());
         model.addAttribute("doctors", doctorService.findAll());
         model.addAttribute("user", users);
@@ -124,7 +129,9 @@ public class PatientController {
     }
     @GetMapping("/cancel/{id}")
     public String delete(@PathVariable("id") Long id) {
-        appointmentService.delete(id);
+        Appointments appointments = appointmentService.findById(id);
+        appointments.setStatus("CANCELLED");
+        appointmentService.save(appointments);
         return "redirect:/hospital/patient/history";
     }
     @GetMapping("/logout")
@@ -154,4 +161,16 @@ public class PatientController {
         model.addAttribute("prescriptionDetails", prescriptionDetails);
         return "patient/patient-history-detail";
     }
+    @GetMapping("/payment")
+    public String payment(HttpSession session,Model model) {
+        Users users = (Users) session.getAttribute("user");
+        if (users == null) {
+            return "redirect:/hospital/login";
+        }
+        model.addAttribute("user", users);
+        model.addAttribute("payments", paymentService.findByPatientId(users.getId()));
+        return "patient/patient-payment";
+    }
+
+
 }

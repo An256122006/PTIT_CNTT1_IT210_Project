@@ -5,12 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.MedicineDto;
 import org.example.dto.SpecialtiesDto;
 import org.example.model.Medicines;
+import org.example.model.Role;
 import org.example.model.Specialties;
 import org.example.model.Users;
 import org.example.service.IPrensionService;
-import org.example.service.impl.MedicineService;
-import org.example.service.impl.PrescriptionDetailService;
-import org.example.service.impl.SpecicaltiesService;
+import org.example.service.impl.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +29,8 @@ public class AdminController {
     private final MedicineService medicineService;
     private final IPrensionService prescriptionService;
     private final PrescriptionDetailService prescriptionDetailService;
+    private final PaymentService paymentService;
+    private final UserService userService;
     @GetMapping
     public String admin(HttpSession session) {
         Users users = (Users) session.getAttribute("user");
@@ -39,14 +40,23 @@ public class AdminController {
         return "admin/admin-dashboard";
     }
     
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session) {
-        Users users = (Users) session.getAttribute("user");
-        if (users == null) {
-            return "redirect:/hospital/login";
-        }
-        return "admin/admin-dashboard";
-    }
+     @GetMapping("/dashboard")
+     public String dashboard(HttpSession session,Model model) {
+         Users users = (Users) session.getAttribute("user");
+         if (users == null) {
+             return "redirect:/hospital/login";
+         }
+         model.addAttribute("payments", paymentService.findByStatus("PAID"));
+         model.addAttribute("prescription",prescriptionService.findAll() != null ? prescriptionService.findAll().stream().filter(prescription -> prescription.getStatus().equals("PENDING")).toList() : new java.util.ArrayList<>());
+         model.addAttribute("specialties",specialtyService.findAll() != null ? specialtyService.findAll() : new java.util.ArrayList<>());
+         model.addAttribute("medicines",medicineService.findAll("") != null ? medicineService.findAll("") : new java.util.ArrayList<>());
+         model.addAttribute("users",userService.findAll() != null ? userService.findAll().stream().filter(user -> user.getRole()== Role.PATIENT).toList() : new java.util.ArrayList<>());
+         model.addAttribute("recentPrescriptions", prescriptionService.findAll() != null ? prescriptionService.findAll().stream()
+                 .sorted((a, b) -> b.getId().compareTo(a.getId()))
+                 .limit(5)
+                 .toList() : new java.util.ArrayList<>());
+         return "admin/admin-dashboard";
+     }
     @GetMapping("/specialties")
     public String specialties(HttpSession session, Model model) {
         Users users = (Users) session.getAttribute("user");
@@ -265,5 +275,10 @@ public class AdminController {
         }
             medicineService.deleteMedicine(id);
             return "redirect:/hospital/admin/medicines";
+    }
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/hospital/login";
     }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -118,7 +118,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/logout">
+                        <a class="nav-link" href="/hospital/admin/logout">
                             <i class="fas fa-sign-out-alt"></i> Đăng xuất
                         </a>
                     </li>
@@ -136,8 +136,8 @@
                         <div class="admin-avatar">
                             <i class="fas fa-shield-alt"></i>
                         </div>
-                        <h6 class="mb-1"><!-- Tên admin sẽ được load từ DB --></h6>
-                        <small class="text-muted"><!-- Mã admin sẽ được load từ DB --></small>
+                        <h6 class="mb-1"></h6>
+                        <small class="text-muted"></small>
                     </div>
                     <div class="quick-info">
                         <div class="mb-3">
@@ -145,37 +145,43 @@
                             <strong>Quản trị viên</strong>
                         </div>
                         <div class="mb-3">
+                            <small class="text-muted d-block">Số Tiền</small>
+                            <strong th:text="${#numbers.formatDecimal(
+    payments != null ? #aggregates.sum(payments.![amount]) : 0,
+    0,'COMMA',0,'POINT'
+)} + ' VNĐ'"></strong>
+                        </div>
+
+                        <div class="mb-3">
                             <small class="text-muted d-block">Đơn thuốc chờ duyệt</small>
-                            <strong><span class="badge bg-warning">8</span></strong>
+                            <strong><span class="badge bg-warning" th:text="${prescription != null ? #lists.size(prescription) : 0}"></span></strong>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Main Content -->
             <div class="col-md-9">
                 <div class="row mb-4">
                     <div class="col-md-3">
                         <div class="stats-card">
-                            <h3>125</h3>
+                            <h3 th:text="${users != null ? #lists.size(users) : 0}"></h3>
                             <p>Tổng bệnh nhân</p>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="stats-card">
-                            <h3>8</h3>
+                            <h3 th:text="${prescription != null ? #lists.size(prescription) : 0}"></h3>
                             <p>Đơn thuốc chờ</p>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="stats-card">
-                            <h3>15</h3>
-                            <p>Danh mục thuốc</p>
+                            <h3 th:text="${specialties != null ? #lists.size(specialties) : 0}"></h3>
+                            <p>Danh Sách Chuyên Khoa</p>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="stats-card">
-                            <h3>15</h3>
+                            <h3 th:text="${medicines != null ? #lists.size(medicines) : 0}"></h3>
                             <p>Loại thuốc</p>
                         </div>
                     </div>
@@ -188,19 +194,27 @@
                     <div class="card-body">
                         <h5 class="mb-3">Hoạt động gần đây</h5>
                         <div class="list-group">
-                            <div class="list-group-item">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">Bác sĩ Trần Văn B kê đơn thuốc mới</h6>
-                                    <small>5 phút trước</small>
-                                </div>
-                                <p class="mb-1">Bệnh nhân: Nguyễn Văn A - Mã đơn: DT001234</p>
+                            <div th:if="${recentPrescriptions == null or #lists.isEmpty(recentPrescriptions)}" class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> Chưa có hoạt động gần đây
                             </div>
-                            <div class="list-group-item">
+                            <div th:each="rx : ${recentPrescriptions}" class="list-group-item">
                                 <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">Cập nhật danh mục thuốc</h6>
-                                    <small>2 giờ trước</small>
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-prescription me-2"></i>
+                                        <span th:text="'Bác sĩ ' + ${rx.medicalRecord.appointments.doctor.users.username} + ' kê đơn thuốc mới'"></span>
+                                    </h6>
+                                    <small th:text="'Mã: #' + ${rx.id}"></small>
                                 </div>
-                                <p class="mb-1">Cập nhật giá 5 loại thuốc</p>
+                                <p class="mb-1">
+                                    <strong>Bệnh nhân:</strong>
+                                    <span th:text="${rx.medicalRecord.appointments.patient.username}"></span>
+                                </p>
+                                <p class="mb-0">
+                                    <strong>Trạng thái:</strong>
+                                    <span th:if="${rx.status == 'PENDING'}" class="badge bg-warning text-dark">Chờ duyệt</span>
+                                    <span th:if="${rx.status == 'APPROVED'}" class="badge bg-success">Đã duyệt</span>
+                                    <span th:if="${rx.status == 'REJECTED'}" class="badge bg-danger">Từ chối</span>
+                                </p>
                             </div>
                         </div>
                     </div>

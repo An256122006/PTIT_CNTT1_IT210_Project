@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface ISpecialtiesService {
     List<Specialties> findAll();
+    List<Specialties> findAll(String search);
     Specialties save(Specialties specialties);
     void delete(Long id);
     Specialties findById(Long id);
